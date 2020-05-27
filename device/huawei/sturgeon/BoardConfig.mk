@@ -25,7 +25,7 @@ TARGET_KRAIT_BIONIC_PLDSIZE := 64
 TARGET_NO_BOOTLOADER := true
 TARGET_BOOTLOADER_BOARD_NAME := sturgeon
 
-BOARD_KERNEL_CMDLINE := androidboot.selinux=permissive androidboot.hardware=sturgeon user_debug=31 maxcpus=4 msm_rtb.filter=0x3F console=null pm_levels.sleep_disabled=1  androidboot.console=null
+BOARD_KERNEL_CMDLINE := androidboot.selinux=permissive console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=smelt utags.blkdev=/dev/block/platform/msm_sdcc.1/by-name/utags utags.backup=/dev/block/platform/msm_sdcc.1/by-name/utagsBackup user_debug=31 msm_rtb.filter=0x3
 BOARD_KERNEL_IMAGE_NAME := zImage-dtb
 BOARD_KERNEL_BASE := 0x0000000
 BOARD_KERNEL_PAGESIZE := 2048
@@ -47,6 +47,12 @@ BOARD_SUPPRESS_SECURE_ERASE := true
 BOARD_HAS_NO_REAL_SDCARD := true
 
 PRODUCT_COPY_FILES += device/huawei/sturgeon/fstab.sturgeon:root/fstab.sturgeon \
+    device/huawei/sturgeon/fstab.smelt:root/fstab.smelt \
+    device/huawei/sturgeon/firmware/image/atmxt-r3.tdat:root/firmware/image/atmxt-r3.tdat \
+    device/huawei/sturgeon/firmware/image/atmxt-r3_hybrid.tdat:root/firmware/image/atmxt-r3_hybrid.tdat \
+    device/huawei/sturgeon/firmware/image/atmxt-r3_large.tdat:root/firmware/image/atmxt-r3_large.tdat \
+    device/huawei/sturgeon/firmware/image/atmxt-r3_small.tdat:root/firmware/image/atmxt-r3_small.tdat \
+    device/huawei/sturgeon/init.recovery.smelt.rc:root/init.recovery.smelt.rc \
     device/huawei/sturgeon/init.recovery.sturgeon.rc:root/init.recovery.sturgeon.rc
 
 TARGET_RECOVERY_FSTAB := device/huawei/sturgeon/twrp.fstab
