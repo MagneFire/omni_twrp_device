@@ -11,7 +11,7 @@ import /init.usb.configfs.rc
 import /init.${ro.zygote}.rc
 import /init.trace.rc
 import /init.omni.rc
-import /init.recovery.sturgeon.rc
+import /init.recovery.smelt.rc
 
 on early-init
     # Set init and its forked children's oom_adj.

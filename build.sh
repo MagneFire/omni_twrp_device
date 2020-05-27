@@ -3,10 +3,10 @@
 CURDATE=`date "+%m-%d-%Y"`
 
 PARENT=`readlink -f .`
-OUT="$PARENT/out/target/product/sturgeon"
+OUT="$PARENT/out/target/product/smelt"
 AROMA="$PARENT/external/aroma-installer/out"
 COMPILED="$PARENT/compiled"
-CONFIG="omni_sturgeon-eng"
+CONFIG="omni_smelt-eng"
 COMPILE="recoveryimage" # [aroma_installer,recoveryimage]
 
 export USE_CCACHE=1

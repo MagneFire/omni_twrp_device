@@ -1,5 +1,5 @@
 # inherit from the proprietary version
--include vendor/huawei/sturgeon/BoardConfigVendor.mk
+-include vendor/motorola/smelt/BoardConfigVendor.mk
 
 TARGET_ARCH := arm
 TARGET_NO_BOOTLOADER := true
@@ -23,7 +23,7 @@ TARGET_KRAIT_BIONIC_BBTHRESH := 64
 TARGET_KRAIT_BIONIC_PLDSIZE := 64
 
 TARGET_NO_BOOTLOADER := true
-TARGET_BOOTLOADER_BOARD_NAME := sturgeon
+TARGET_BOOTLOADER_BOARD_NAME := smelt
 
 BOARD_KERNEL_CMDLINE := androidboot.selinux=permissive console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=smelt utags.blkdev=/dev/block/platform/msm_sdcc.1/by-name/utags utags.backup=/dev/block/platform/msm_sdcc.1/by-name/utagsBackup user_debug=31 msm_rtb.filter=0x3
 BOARD_KERNEL_IMAGE_NAME := zImage-dtb
@@ -31,8 +31,8 @@ BOARD_KERNEL_BASE := 0x0000000
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x0008000 --ramdisk_offset 0x2000000 --second_offset 0x0f00000 --tags_offset 0x01E00000
 
-TARGET_KERNEL_SOURCE := kernel/huawei/sturgeon
-TARGET_KERNEL_CONFIG := sturgeon_omni_defconfig
+TARGET_KERNEL_SOURCE := kernel
+TARGET_KERNEL_CONFIG := smelt_defconfig
 
 BOARD_BOOTIMAGE_PARTITION_SIZE := 23068672
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 23068672
@@ -46,16 +46,15 @@ BOARD_HAS_NO_SELECT_BUTTON := true
 BOARD_SUPPRESS_SECURE_ERASE := true
 BOARD_HAS_NO_REAL_SDCARD := true
 
-PRODUCT_COPY_FILES += device/huawei/sturgeon/fstab.sturgeon:root/fstab.sturgeon \
-    device/huawei/sturgeon/fstab.smelt:root/fstab.smelt \
-    device/huawei/sturgeon/firmware/image/atmxt-r3.tdat:root/firmware/image/atmxt-r3.tdat \
-    device/huawei/sturgeon/firmware/image/atmxt-r3_hybrid.tdat:root/firmware/image/atmxt-r3_hybrid.tdat \
-    device/huawei/sturgeon/firmware/image/atmxt-r3_large.tdat:root/firmware/image/atmxt-r3_large.tdat \
-    device/huawei/sturgeon/firmware/image/atmxt-r3_small.tdat:root/firmware/image/atmxt-r3_small.tdat \
-    device/huawei/sturgeon/init.recovery.smelt.rc:root/init.recovery.smelt.rc \
-    device/huawei/sturgeon/init.recovery.sturgeon.rc:root/init.recovery.sturgeon.rc
+PRODUCT_COPY_FILES += \
+    device/motorola/smelt/fstab.smelt:root/fstab.smelt \
+    device/motorola/smelt/firmware/image/atmxt-r3.tdat:root/firmware/image/atmxt-r3.tdat \
+    device/motorola/smelt/firmware/image/atmxt-r3_hybrid.tdat:root/firmware/image/atmxt-r3_hybrid.tdat \
+    device/motorola/smelt/firmware/image/atmxt-r3_large.tdat:root/firmware/image/atmxt-r3_large.tdat \
+    device/motorola/smelt/firmware/image/atmxt-r3_small.tdat:root/firmware/image/atmxt-r3_small.tdat \
+    device/motorola/smelt/init.recovery.smelt.rc:root/init.recovery.smelt.rc
 
-TARGET_RECOVERY_FSTAB := device/huawei/sturgeon/twrp.fstab
+TARGET_RECOVERY_FSTAB := device/motorola/smelt/twrp.fstab
 
 TARGET_RECOVERY_QCOM_RTC_FIX := true
 
@@ -74,7 +73,7 @@ TWRP_INCLUDE_LOGCAT := true
 TW_USE_NEW_MINADBD := true
 TW_NEW_ION_HEAP := true
 TW_TARGET_USES_QCOM_BSP := true
-TW_CUSTOM_THEME := device/huawei/sturgeon/watch_mdpi
+TW_CUSTOM_THEME := device/motorola/smelt/watch_mdpi
 TW_ROUND_SCREEN := true
 TW_NO_USB_STORAGE := true
 TW_NO_EXFAT := true

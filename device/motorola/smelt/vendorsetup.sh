@@ -1,0 +1,3 @@
+add_lunch_combo omni_smelt-eng
+add_lunch_combo omni_smelt-user
+add_lunch_combo omni_smelt-userdebug
