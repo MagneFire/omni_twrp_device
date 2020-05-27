@@ -11,6 +11,8 @@ COMPILE="recoveryimage" # [aroma_installer,recoveryimage]
 
 export USE_CCACHE=1
 
+export LANG=C
+
 echo " "
 echo "**************************************************************"
 echo "**************************************************************"
@@ -129,7 +131,7 @@ if [ -e $COMPILED/aroma.zip ]; then
 	adb reboot recovery
 fi
 
-if [ -e $COMPILED/recovery.img ]; then
-	adb reboot bootloader
-	sudo fastboot flash recovery $COMPILED/recovery.img
-fi
+#if [ -e $COMPILED/recovery.img ]; then
+#	adb reboot bootloader
+#	sudo fastboot flash recovery $COMPILED/recovery.img
+#fi
