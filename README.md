@@ -17,6 +17,7 @@ mkdir smelt_twrp
 cd smelt_twrp/
 mkdir -p device/motorola/
 git clone https://github.com/MagneFire/omni_twrp_device_smelt.git device/motorola/smelt
+git clone --verbose --single-branch --depth=1 --branch android-msm-smelt-3.10-marshmallow-mr1-wear-release https://android.googlesource.com/kernel/msm device/motorola/smelt/kernel
 repo init -u git://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni.git -b twrp-6.0
 repo sync
 ```
@@ -24,6 +25,7 @@ repo sync
 We should now be ready to compile.
 ```sh
 . build/envsetup.sh
+export LANG=C
 lunch omni_smelt-eng
 make -j4 recoveryimage
 ```
