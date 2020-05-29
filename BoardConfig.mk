@@ -32,8 +32,6 @@ BOARD_KERNEL_BASE := 0x0000000
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x0008000 --ramdisk_offset 0x2000000 --second_offset 0x0f00000 --tags_offset 0x01E00000
 
-#TARGET_PREBUILT_KERNEL := $(DEVICE_TREE)/zImage-dtb
-
 TARGET_KERNEL_SOURCE := $(DEVICE_TREE)/kernel
 TARGET_KERNEL_CONFIG := smelt_defconfig
 
@@ -49,15 +47,6 @@ BOARD_VOLD_EMMC_SHARES_DEV_MAJOR := true
 BOARD_HAS_NO_SELECT_BUTTON := true
 BOARD_SUPPRESS_SECURE_ERASE := true
 BOARD_HAS_NO_REAL_SDCARD := true
-
-#PRODUCT_COPY_FILES += \
-#    firmware/image/atmxt-r3.tdat:root/firmware/image/atmxt-r3.tdat \
-#    firmware/image/atmxt-r3_hybrid.tdat:root/firmware/image/atmxt-r3_hybrid.tdat \
-#    firmware/image/atmxt-r3_large.tdat:root/firmware/image/atmxt-r3_large.tdat \
-#    firmware/image/atmxt-r3_small.tdat:root/firmware/image/atmxt-r3_small.tdat \
-#    init.recovery.smelt.rc:root/init.recovery.smelt.rc
-
-#TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery.fstab
 
 TARGET_RECOVERY_QCOM_RTC_FIX := true
 
@@ -77,8 +66,6 @@ TW_USE_NEW_MINADBD := true
 TW_NEW_ION_HEAP := true
 TW_TARGET_USES_QCOM_BSP := true
 TW_THEME := watch_mdpi
-#TW_CUSTOM_THEME := $(DEVICE_TREE)/watch_mdpi
-#TW_ROUND_SCREEN := true
 TW_NO_USB_STORAGE := true
 TW_NO_EXFAT := true
 TW_NO_EXFAT_FUSE := true
@@ -91,10 +78,7 @@ TW_EXCLUDE_SUPERSU := true
 ARCH_ARM_HAVE_NEON := true
 TW_WHITELIST_INPUT := atmxt-i2c
 
-#DEVICE_RESOLUTION := 240x240
 TW_X_OFFSET := 40
 TW_Y_OFFSET := 40
-TW_H_OFFSET := 10
-TW_W_OFFSET := 10
-#TW_BRIGHTNESS_PATH := /sys/class/leds/lcd-backlight/brightness
-TWRP_EVENT_LOGGING := true
+TW_H_OFFSET := -40
+TW_W_OFFSET := -80
