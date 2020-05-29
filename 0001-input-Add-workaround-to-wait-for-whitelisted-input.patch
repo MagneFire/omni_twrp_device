@@ -1,0 +1,178 @@
+From 18305abf2e2b5c617bf2c77b91aab8a1938191ee Mon Sep 17 00:00:00 2001
+From: MagneFire <idanlcontact@gmail.com>
+Date: Fri, 29 May 2020 13:31:37 +0200
+Subject: [PATCH] input: Add workaround to wait for whitelisted input. The
+ touchscreen input is created very late in the boot process. This results in
+ the TWRP gui being loaded before the touchscreen is active. There is a piece
+ of code that reloads the input devices when it detects changes. This has the
+ following problems: - It is not triggered on smelt. - Forcing a reload still
+ results in a non-functional touchscreen.
+
+This workaround consists of waiting to load the gui until the whitelisted input (in this case the touchscreen) device comes available.
+
+Change-Id: Ib32523a85e851e8113a8e1733a45b6cfc93b4f43
+---
+ gui/Android.mk       |  4 +++
+ gui/gui.cpp          | 10 +++++++
+ minuitwrp/events.cpp | 68 +++++++++++++++++++++++++++++++++++++++++++-
+ minuitwrp/minui.h    |  1 +
+ 4 files changed, 82 insertions(+), 1 deletion(-)
+
+diff --git a/gui/Android.mk b/gui/Android.mk
+index 02bd0a19..564458ea 100755
+--- a/gui/Android.mk
++++ b/gui/Android.mk
+@@ -93,6 +93,10 @@ ifeq ($(TW_SCREEN_BLANK_ON_BOOT), true)
+     LOCAL_CFLAGS += -DTW_SCREEN_BLANK_ON_BOOT
+ endif
+ 
++ifneq ($(TW_WHITELIST_INPUT),)
++  LOCAL_CFLAGS += -DWHITELIST_INPUT=$(TW_WHITELIST_INPUT)
++endif
++
+ LOCAL_C_INCLUDES += \
+     bionic \
+     system/core/include \
+diff --git a/gui/gui.cpp b/gui/gui.cpp
+index ade4d792..f0127c98 100644
+--- a/gui/gui.cpp
++++ b/gui/gui.cpp
+@@ -771,6 +771,16 @@ extern "C" int gui_init(void)
+ 		PageManager::ReleasePackage("splash");
+ 	}
+ 
++
++#ifdef WHITELIST_INPUT
++	int retry_count = 25;
++	while (retry_count > 0 && !ev_whitelist_found())
++	{
++        printf("Whitelisted input not found, retrying: %d\n", retry_count);
++		usleep(100000);
++		retry_count--;
++	}
++#endif
+ 	ev_init();
+ 	return 0;
+ }
+diff --git a/minuitwrp/events.cpp b/minuitwrp/events.cpp
+index a2a3d166..3ab6c17e 100755
+--- a/minuitwrp/events.cpp
++++ b/minuitwrp/events.cpp
+@@ -106,6 +106,7 @@ static unsigned ev_count = 0;
+ static struct timeval lastInputStat;
+ static time_t lastInputMTime;
+ static int has_mouse = 0;
++static int whitelisted_found = 0;
+ 
+ static inline int ABS(int x) {
+     return x<0?-x:x;
+@@ -183,6 +184,9 @@ static int vk_init(struct ev *e)
+     if (strcmp(e->deviceName, EXPAND(WHITELIST_INPUT)) != 0)
+     {
+         e->ignored = 1;
++    } else
++    {
++        whitelisted_found = 1;
+     }
+ #else
+ #ifndef TW_INPUT_BLACKLIST
+@@ -316,6 +320,67 @@ int ev_has_mouse(void)
+ 	return has_mouse;
+ }
+ 
++int ev_whitelist_found(void)
++{
++
++#ifndef WHITELIST_INPUT
++    return 1;
++#else
++    if (whitelisted_found) return 1;
++
++    DIR *dir;
++    struct dirent *de;
++    int fd;
++    int found = 0;
++
++	dir = opendir("/dev/input");
++    if(dir != 0) {
++        while((de = readdir(dir))) {
++#ifdef _EVENT_LOGGING
++            fprintf(stderr,"/dev/input/%s\n", de->d_name);
++#endif
++            if(strncmp(de->d_name,"event",5)) continue;
++            fd = openat(dirfd(dir), de->d_name, O_RDONLY);
++            if(fd < 0) continue;
++
++			ev_fds[ev_count].fd = fd;
++            ev_fds[ev_count].events = POLLIN;
++            evs[ev_count].fd = &ev_fds[ev_count];
++
++
++            char vk_path[PATH_MAX] = "/sys/board_properties/virtualkeys.";
++            char vks[2048], *ts = NULL;
++            ssize_t len;
++            int vk_fd;
++            int i;
++
++            len = strlen(vk_path);
++            len = ioctl(evs[ev_count].fd->fd, EVIOCGNAME(sizeof(evs[ev_count].deviceName)), evs[ev_count].deviceName);
++            if (len <= 0)
++            {
++                LOGE("Unable to query event object.\n");
++                return -1;
++            }
++        #ifdef _EVENT_LOGGING
++            printf("Event object: %s\n", evs[ev_count].deviceName);
++        #endif
++
++            if (!strcmp(evs[ev_count].deviceName, EXPAND(WHITELIST_INPUT)))
++            {
++                found = 1;
++                break;
++            }
++
++            ev_count++;
++            if(ev_count == MAX_DEVICES) break;
++        }
++        closedir(dir);
++        ev_count = 0;
++    }
++
++    return found;
++#endif
++}
+ int ev_init(void)
+ {
+     DIR *dir;
+@@ -368,6 +433,7 @@ void ev_exit(void)
+ 		close(ev_fds[ev_count].fd);
+ 	}
+ 	ev_count = 0;
++	whitelisted_found = 0;
+ }
+ 
+ /*static int vk_inside_display(__s32 value, struct input_absinfo *info, int screen_size)
+@@ -766,7 +832,7 @@ int ev_get(struct input_event *ev, int timeout_ms)
+     {
+         struct stat st;
+         stat("/dev/input", &st);
+-        if (st.st_mtime > lastInputMTime)
++        if ((st.st_mtime > lastInputMTime) || (!whitelisted_found))
+         {
+             LOGI("Reloading input devices\n");
+             ev_exit();
+diff --git a/minuitwrp/minui.h b/minuitwrp/minui.h
+index 2c462e75..95c4e6d7 100644
+--- a/minuitwrp/minui.h
++++ b/minuitwrp/minui.h
+@@ -97,6 +97,7 @@ int ev_init(void);
+ void ev_exit(void);
+ int ev_get(struct input_event *ev, int timeout_ms);
+ int ev_has_mouse(void);
++int ev_whitelist_found(void);
+ 
+ // Resources
+ 
+-- 
+2.26.2
+
